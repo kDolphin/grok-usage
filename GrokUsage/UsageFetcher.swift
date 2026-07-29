@@ -94,21 +94,6 @@ enum UsageFetcher {
             throw UsageFetcherError.badPayload
         }
 
-        let usedPercent: Double
-        if let percent = config["creditUsagePercent"] as? Double {
-            usedPercent = percent
-        } else if let percent = config["creditUsagePercent"] as? Int {
-            usedPercent = Double(percent)
-        } else if
-            let monthly = moneyCents(config["monthlyLimit"]),
-            let used = moneyCents(config["used"] ?? (config["usage"] as? [String: Any])?["totalUsed"]),
-            monthly > 0
-        {
-            usedPercent = min(100, Double(used) / Double(monthly) * 100)
-        } else {
-            throw UsageFetcherError.badPayload
-        }
-
         var periodType: String?
         var periodStart: Date?
         var periodEnd: Date?
@@ -126,18 +111,29 @@ enum UsageFetcher {
             periodEnd = parseDate(config["billingPeriodEnd"])
         }
 
+        // `creditUsagePercent` is often omitted when usage is 0 (proto3 zero-default).
+        let usedPercent: Double
+        if let percent = doubleValue(config["creditUsagePercent"]) {
+            usedPercent = percent
+        } else if periodStart != nil || periodEnd != nil || config["currentPeriod"] != nil {
+            // Weekly/unified credits payload after reset — treat missing percent as 0.
+            usedPercent = 0
+        } else if
+            let monthly = moneyCents(config["monthlyLimit"]),
+            let used = moneyCents(config["used"] ?? (config["usage"] as? [String: Any])?["totalUsed"]),
+            monthly > 0
+        {
+            usedPercent = min(100, Double(used) / Double(monthly) * 100)
+        } else {
+            throw UsageFetcherError.badPayload
+        }
+
         var products: [ProductUsage] = []
         if let rawProducts = config["productUsage"] as? [[String: Any]] {
             products = rawProducts.compactMap { item in
                 guard let product = item["product"] as? String else { return nil }
-                let percent: Double
-                if let p = item["usagePercent"] as? Double {
-                    percent = p
-                } else if let p = item["usagePercent"] as? Int {
-                    percent = Double(p)
-                } else {
-                    return nil
-                }
+                // Missing usagePercent on a product row also means ~0 after reset.
+                let percent = doubleValue(item["usagePercent"]) ?? 0
                 return ProductUsage(product: product, usagePercent: percent)
             }
             .sorted { $0.usagePercent > $1.usagePercent }
@@ -159,12 +155,23 @@ enum UsageFetcher {
         )
     }
 
+    /// JSON numbers may arrive as Int, Double, or NSNumber.
+    private static func doubleValue(_ value: Any?) -> Double? {
+        if let n = value as? Double { return n }
+        if let n = value as? Int { return Double(n) }
+        if let n = value as? NSNumber { return n.doubleValue }
+        if let s = value as? String, let n = Double(s) { return n }
+        return nil
+    }
+
     private static func moneyCents(_ value: Any?) -> Int? {
         if let n = value as? Int { return n }
         if let n = value as? Double { return Int(n) }
+        if let n = value as? NSNumber { return n.intValue }
         if let obj = value as? [String: Any] {
             if let n = obj["val"] as? Int { return n }
             if let n = obj["val"] as? Double { return Int(n) }
+            if let n = obj["val"] as? NSNumber { return n.intValue }
         }
         return nil
     }
