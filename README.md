@@ -5,7 +5,7 @@
 A lightweight macOS menu bar app that shows your **Grok weekly usage** and **time until the next reset**.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.2-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>
@@ -94,6 +94,18 @@ No model calls — only billing metadata.
 
 - Swift / SwiftUI `MenuBarExtra`
 - No third-party dependencies
+
+## Project layout
+
+```text
+GrokUsage/                 # App target (sources + localizations + icon)
+  *.swift
+  Info.plist
+  en.lproj/  zh-Hans.lproj/
+  Resources/AppIcon.icns
+build.sh                   # → build/Grok Usage.app + GrokUsage.zip
+screenshot/                # README images
+```
 
 ## License
 

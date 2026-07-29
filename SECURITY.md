@@ -1,16 +1,37 @@
-# Security
+# Security Policy
 
-## 报告问题
+**English** | **[简体中文](#安全说明)**
 
-若发现与本工具相关的安全问题，请优先通过 GitHub Security Advisory（Private vulnerability reporting）或私信维护者，避免公开 Issue 贴出 token。
+## Reporting a vulnerability
 
-## 本工具会接触的敏感数据
+If you find a security issue in this project, please use [GitHub Security Advisories](https://github.com/kDolphin/grok-usage/security/advisories/new) (private report) or contact the maintainer privately.
 
-- `~/.grok/auth.json` 中的 OIDC access / refresh token（与 Grok Build 共用）  
-- 自动续期时会**写回**该文件  
+**Do not** open a public issue that includes tokens, `auth.json` contents, or other credentials.
 
-请勿把 `auth.json`、导出的 token、或带真实邮箱/账号的调试日志提交到仓库。
+## What this app touches
 
-## 范围
+- Reads `~/.grok/auth.json` (shared with Grok Build)
+- May **write** updated OIDC access/refresh tokens back to that file
+- Network: `auth.x.ai` (token refresh), `cli-chat-proxy.grok.com` (usage metadata only)
 
-本项目是非官方客户端，仅请求额度元数据与 OIDC 续期；不代理你的对话内容。
+Never commit secrets, auth files, or screenshots that show your account email.
+
+---
+
+## 安全说明
+
+**[English](#security-policy)** | **简体中文**
+
+## 如何报告漏洞
+
+若发现与本项目相关的安全问题，请通过 [GitHub Security Advisories](https://github.com/kDolphin/grok-usage/security/advisories/new) 私下报告，或私信维护者。
+
+**请勿**在公开 Issue 中粘贴 token、`auth.json` 内容或其它凭证。
+
+## 本应用会接触的数据
+
+- 读取 `~/.grok/auth.json`（与 Grok Build 共用）
+- 自动续期时可能**写回** access / refresh token
+- 网络：`auth.x.ai`（续期）、`cli-chat-proxy.grok.com`（仅额度元数据）
+
+请勿将密钥、登录文件、或带有账号邮箱的截图提交到仓库。

@@ -5,7 +5,7 @@
 轻量 macOS 菜单栏应用：显示 **Grok 周用量** 与 **下次重置倒计时**。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.2-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>
@@ -94,6 +94,18 @@ grok login   # 从未登录时才需要
 
 - Swift / SwiftUI `MenuBarExtra`
 - 无第三方依赖
+
+## 目录结构
+
+```text
+GrokUsage/                 # 应用本体（源码 + 本地化 + 图标）
+  *.swift
+  Info.plist
+  en.lproj/  zh-Hans.lproj/
+  Resources/AppIcon.icns
+build.sh                   # → build/Grok Usage.app + GrokUsage.zip
+screenshot/                # README 截图
+```
 
 ## License
 
