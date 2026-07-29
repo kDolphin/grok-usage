@@ -1,0 +1,75 @@
+/* Grok Usage - Simplified Chinese */
+
+// App chrome
+"Grok Usage" = "Grok 用量";
+"Error" = "错误";
+"Auth file: ~/.grok/auth.json" = "认证文件：~/.grok/auth.json";
+"Loading usage…" = "正在读取用量…";
+"Used" = "已用";
+"Remaining %d%%" = "剩余 %d%%";
+"Next reset" = "下次重置";
+"Resets at" = "重置时间";
+"Extra credits" = "额外额度";
+"Refreshed" = "刷新于";
+"Updating…" = "更新中…";
+"Offline cache · updates when online" = "离线缓存 · 联网后会自动更新";
+"By product" = "产品占比";
+"Refresh now" = "立即刷新";
+"Refreshing…" = "正在刷新…";
+"Open Grok Usage" = "打开 Grok Usage";
+"Open Billing" = "打开 Billing";
+"Launch at Login" = "登录时启动";
+"Quit Grok Usage" = "退出 Grok Usage";
+"Unknown" = "未知";
+
+// Status
+"OK" = "正常";
+"High" = "偏高";
+"Tight" = "紧张";
+"Weekly" = "周额度";
+"Monthly" = "月额度";
+"Quota" = "额度";
+
+// Countdown
+"soon" = "即将重置";
+"%1$dd%2$dh" = "%1$dd%2$dh";
+"%1$dh%2$dm" = "%1$dh%2$dm";
+"%dm" = "%dm";
+"%1$d d %2$d h" = "%1$d 天 %2$d 小时";
+"%1$d h %2$d m" = "%1$d 小时 %2$d 分";
+"%d min" = "%d 分钟";
+
+// Accessibility
+"Grok usage %1$d%%, %2$@ resets in %3$@" = "Grok 已用 %1$d%%，%2$@重置剩余 %3$@";
+"Grok usage failed: %@" = "Grok 用量读取失败：%@";
+"Grok usage loading" = "Grok 用量加载中";
+
+// Login item
+"Launch at login requested. Allow Grok Usage in System Settings → General → Login Items." = "已请求开机启动，请在「系统设置 → 通用 → 登录项」中允许 Grok Usage。";
+"Could not enable launch at login. Keep the app in the Applications folder." = "未能开启开机启动。请确认 App 在「应用程序」文件夹中。";
+"Launch at login failed: %@" = "设置开机启动失败：%@";
+"Login item: enabled" = "系统登录项：已开启";
+"Login item: not registered" = "系统登录项：未注册";
+"Login item: app not found (install to Applications)" = "系统登录项：未找到 App（请放在「应用程序」）";
+"Login item: pending approval in System Settings → General → Login Items" = "系统登录项：待在「系统设置 → 通用 → 登录项」中允许";
+"Login item: unknown status" = "系统登录项：未知状态";
+
+// Auth
+"Missing %@. Run `grok` once to sign in." = "未找到 %@。请先运行一次 `grok` 登录。";
+"Invalid auth.json format." = "auth.json 格式无效。";
+"No token in auth.json. Run `grok` once to sign in." = "auth.json 中没有可用 token。请运行一次 `grok` 登录。";
+"No refresh_token; cannot renew silently. Run `grok` to sign in." = "没有 refresh_token，无法自动续期。请运行一次 `grok` 完成登录。";
+"Token refresh failed: %@. Try running `grok` once (usually no full `grok login`)." = "自动续期失败：%@。可尝试运行一次 `grok`（一般不必 `grok login`）。";
+"Invalid response" = "无效响应";
+"Response missing access_token" = "响应缺少 access_token";
+
+// Fetch
+"Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`)." = "鉴权失败。将尝试自动续期；若仍失败请运行一次 `grok`（通常不必 `grok login`）。";
+"Could not parse usage response." = "用量接口返回了无法解析的数据。";
+"Request timed out. Check the network and try again." = "请求超时。请检查网络后重试。";
+
+// Notifications
+"Grok usage %d%%" = "Grok 用量 %d%%";
+"About %1$d%% used (%2$@)" = "当前已用约 %1$d%%（%2$@）";
+"; resets in %@" = "，重置还剩 %@";
+" Quota is tight — pace your usage." = "额度紧张，注意控制使用。";

@@ -1,0 +1,25 @@
+# Build outputs
+build/
+dist/
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode
+*.xcuserdata/
+*.pbxuser
+xcuserdata/
+*.xcodeproj
+
+# Local-only agent notes (never publish)
+AGENTS.md
+
+# Raw desktop captures (use redacted docs/ or screenshot/*.png intentionally committed)
+Screenshot*.png
+*.png.nosync

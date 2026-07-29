@@ -1,0 +1,75 @@
+/* Grok Usage - English */
+
+// App chrome
+"Grok Usage" = "Grok Usage";
+"Error" = "Error";
+"Auth file: ~/.grok/auth.json" = "Auth file: ~/.grok/auth.json";
+"Loading usage…" = "Loading usage…";
+"Used" = "Used";
+"Remaining %d%%" = "Remaining %d%%";
+"Next reset" = "Next reset";
+"Resets at" = "Resets at";
+"Extra credits" = "Extra credits";
+"Refreshed" = "Refreshed";
+"Updating…" = "Updating…";
+"Offline cache · updates when online" = "Offline cache · updates when online";
+"By product" = "By product";
+"Refresh now" = "Refresh now";
+"Refreshing…" = "Refreshing…";
+"Open Grok Usage" = "Open Grok Usage";
+"Open Billing" = "Open Billing";
+"Launch at Login" = "Launch at Login";
+"Quit Grok Usage" = "Quit Grok Usage";
+"Unknown" = "Unknown";
+
+// Status
+"OK" = "OK";
+"High" = "High";
+"Tight" = "Tight";
+"Weekly" = "Weekly";
+"Monthly" = "Monthly";
+"Quota" = "Quota";
+
+// Countdown
+"soon" = "soon";
+"%1$dd%2$dh" = "%1$dd%2$dh";
+"%1$dh%2$dm" = "%1$dh%2$dm";
+"%dm" = "%dm";
+"%1$d d %2$d h" = "%1$d d %2$d h";
+"%1$d h %2$d m" = "%1$d h %2$d m";
+"%d min" = "%d min";
+
+// Accessibility
+"Grok usage %1$d%%, %2$@ resets in %3$@" = "Grok usage %1$d%%, %2$@ resets in %3$@";
+"Grok usage failed: %@" = "Grok usage failed: %@";
+"Grok usage loading" = "Grok usage loading";
+
+// Login item
+"Launch at login requested. Allow Grok Usage in System Settings → General → Login Items." = "Launch at login requested. Allow Grok Usage in System Settings → General → Login Items.";
+"Could not enable launch at login. Keep the app in the Applications folder." = "Could not enable launch at login. Keep the app in the Applications folder.";
+"Launch at login failed: %@" = "Launch at login failed: %@";
+"Login item: enabled" = "Login item: enabled";
+"Login item: not registered" = "Login item: not registered";
+"Login item: app not found (install to Applications)" = "Login item: app not found (install to Applications)";
+"Login item: pending approval in System Settings → General → Login Items" = "Login item: pending approval in System Settings → General → Login Items";
+"Login item: unknown status" = "Login item: unknown status";
+
+// Auth
+"Missing %@. Run `grok` once to sign in." = "Missing %@. Run `grok` once to sign in.";
+"Invalid auth.json format." = "Invalid auth.json format.";
+"No token in auth.json. Run `grok` once to sign in." = "No token in auth.json. Run `grok` once to sign in.";
+"No refresh_token; cannot renew silently. Run `grok` to sign in." = "No refresh_token; cannot renew silently. Run `grok` to sign in.";
+"Token refresh failed: %@. Try running `grok` once (usually no full `grok login`)." = "Token refresh failed: %@. Try running `grok` once (usually no full `grok login`).";
+"Invalid response" = "Invalid response";
+"Response missing access_token" = "Response missing access_token";
+
+// Fetch
+"Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`)." = "Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`).";
+"Could not parse usage response." = "Could not parse usage response.";
+"Request timed out. Check the network and try again." = "Request timed out. Check the network and try again.";
+
+// Notifications
+"Grok usage %d%%" = "Grok usage %d%%";
+"About %1$d%% used (%2$@)" = "About %1$d%% used (%2$@)";
+"; resets in %@" = "; resets in %@";
+" Quota is tight — pace your usage." = " Quota is tight — pace your usage.";
