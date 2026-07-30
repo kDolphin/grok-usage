@@ -125,7 +125,7 @@ struct MenuContentView: View {
             }
 
             ProgressView(value: min(max(snap.usedPercent, 0), 100), total: 100)
-                .tint(thresholdColor(snap.usedPercent))
+                .progressViewStyle(UsageProgressStyle(color: thresholdColor(snap.usedPercent)))
 
             VStack(alignment: .leading, spacing: 4) {
                 labeledRow(L10n.nextReset, formatCountdown(snap.resetsIn) ?? L10n.unknown)
@@ -278,6 +278,29 @@ struct MenuContentView: View {
     private func formatUSD(_ cents: Int) -> String {
         let dollars = Double(cents) / 100.0
         return Formatters.currency.string(from: NSNumber(value: dollars)) ?? String(format: "$%.2f", dollars)
+    }
+}
+
+// MARK: - Progress bar
+
+/// Linear bar that always uses the same color as the large percentage label.
+/// System `ProgressView` + `.tint` often stays accent-blue on macOS.
+private struct UsageProgressStyle: ProgressViewStyle {
+    var color: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        let fraction = min(max(configuration.fractionCompleted ?? 0, 0), 1)
+        return GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.primary.opacity(0.12))
+                Capsule()
+                    .fill(color)
+                    .frame(width: max(geo.size.width * CGFloat(fraction), fraction > 0 ? 4 : 0))
+            }
+        }
+        .frame(height: 6)
+        .accessibilityValue(Text("\(Int((fraction * 100).rounded()))%"))
     }
 }
 
