@@ -5,7 +5,7 @@
 A lightweight macOS menu bar app that shows your **Grok weekly usage** and **time until the next reset**.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.2-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.8-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>

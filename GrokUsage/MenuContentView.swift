@@ -13,6 +13,8 @@ struct MenuContentView: View {
         }
         .padding(12)
         .frame(width: 280)
+        // Match system menu continuous corners (Dropbox / input-source style).
+        .menuBarPanelChrome()
         // Menu bar panels: no blue keyboard/click focus rings (same as PowerTop).
         .withoutFocusRing()
     }
