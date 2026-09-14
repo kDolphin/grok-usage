@@ -29,6 +29,9 @@
 "Weekly" = "Weekly";
 "Monthly" = "Monthly";
 "Quota" = "Quota";
+"SuperGrok" = "SuperGrok";
+"Grok Bot" = "Grok Bot";
+"Open Grok Bot Usage" = "Open Grok Bot Usage";
 
 // Countdown
 "soon" = "soon";
@@ -41,6 +44,7 @@
 
 // Accessibility
 "Grok usage %1$d%%, %2$@ resets in %3$@" = "Grok usage %1$d%%, %2$@ resets in %3$@";
+"Grok Bot %d%%" = "Grok Bot %d%%";
 "Grok usage failed: %@" = "Grok usage failed: %@";
 "Grok usage loading" = "Grok usage loading";
 
@@ -68,8 +72,19 @@
 "Could not parse usage response." = "Could not parse usage response.";
 "Request timed out. Check the network and try again." = "Request timed out. Check the network and try again.";
 
+// Grok Bot
+"Grok Bot not signed in. Open Grok Bot once, then refresh." = "Grok Bot not signed in. Open Grok Bot once, then refresh.";
+"Could not read Grok Bot login data." = "Could not read Grok Bot login data.";
+"No Grok Bot account found. Sign in inside Grok Bot, then refresh." = "No Grok Bot account found. Sign in inside Grok Bot, then refresh.";
+"Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once." = "Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once.";
+"Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh." = "Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh.";
+"Grok Bot session token missing. Open Grok Bot once, then refresh." = "Grok Bot session token missing. Open Grok Bot once, then refresh.";
+"Grok Bot session expired. Open Grok Bot once, then refresh." = "Grok Bot session expired. Open Grok Bot once, then refresh.";
+
 // Notifications
 "Grok usage %d%%" = "Grok usage %d%%";
 "About %1$d%% used (%2$@)" = "About %1$d%% used (%2$@)";
+"Grok Bot usage %d%%" = "Grok Bot usage %d%%";
+"Grok Bot about %d%% used" = "Grok Bot about %d%% used";
 "; resets in %@" = "; resets in %@";
 " Quota is tight — pace your usage." = " Quota is tight — pace your usage.";

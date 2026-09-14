@@ -12,7 +12,8 @@ If you find a security issue in this project, please use [GitHub Security Adviso
 
 - Reads `~/.grok/auth.json` (shared with Grok Build)
 - May **write** updated OIDC access/refresh tokens back to that file
-- Network: `auth.x.ai` (token refresh), `cli-chat-proxy.grok.com` (usage metadata only)
+- Reads Grok Bot local secrets (`~/Library/Application Support/Grok Bot/sand-secrets.json`) and unlocks them via Keychain (`Grok Bot Safe Storage`) to fetch Bot weekly usage
+- Network: `auth.x.ai` (token refresh), `cli-chat-proxy.grok.com` (SuperGrok usage metadata), `api2.cursor.sh` (Grok Bot usage metadata only)
 
 Never commit secrets, auth files, or screenshots that show your account email.
 
@@ -32,6 +33,7 @@ Never commit secrets, auth files, or screenshots that show your account email.
 
 - 读取 `~/.grok/auth.json`（与 Grok Build 共用）
 - 自动续期时可能**写回** access / refresh token
-- 网络：`auth.x.ai`（续期）、`cli-chat-proxy.grok.com`（仅额度元数据）
+- 读取 Grok Bot 本地密钥（`~/Library/Application Support/Grok Bot/sand-secrets.json`），并通过钥匙串（`Grok Bot Safe Storage`）解密以获取 Bot 周用量
+- 网络：`auth.x.ai`（续期）、`cli-chat-proxy.grok.com`（SuperGrok 额度元数据）、`api2.cursor.sh`（仅 Grok Bot 额度元数据）
 
 请勿将密钥、登录文件、或带有账号邮箱的截图提交到仓库。

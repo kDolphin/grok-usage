@@ -12,7 +12,7 @@ struct MenuContentView: View {
             footer
         }
         .padding(12)
-        .frame(width: 280)
+        .frame(width: 300)
         // Match system menu continuous corners (Dropbox / input-source style).
         .menuBarPanelChrome()
         // Menu bar panels: no blue keyboard/click focus rings (same as PowerTop).
@@ -110,21 +110,12 @@ struct MenuContentView: View {
 
     private func loadedContent(_ snap: UsageSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .lastTextBaseline) {
-                Text("\(Int(snap.usedPercent.rounded()))%")
-                    .font(.system(size: 34, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(thresholdColor(snap.usedPercent))
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("\(L10n.usedPrefix) · \(snap.cycleLabel)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(L10n.remaining(Int(snap.remainingPercent.rounded())))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-            }
+            meterHeader(
+                title: L10n.supergrokSection,
+                percent: snap.usedPercent,
+                subtitle: "\(L10n.usedPrefix) · \(snap.cycleLabel)",
+                remaining: L10n.remaining(Int(snap.remainingPercent.rounded()))
+            )
 
             ProgressView(value: min(max(snap.usedPercent, 0), 100), total: 100)
                 .progressViewStyle(UsageProgressStyle(color: thresholdColor(snap.usedPercent)))
@@ -173,6 +164,73 @@ struct MenuContentView: View {
                     .font(.callout)
                 }
             }
+
+            botSection
+        }
+    }
+
+    @ViewBuilder
+    private var botSection: some View {
+        if let bot = model.botSnapshot {
+            Divider().padding(.vertical, 2)
+            meterHeader(
+                title: L10n.botSection,
+                percent: bot.usedPercent,
+                subtitle: botSubtitle(bot),
+                remaining: L10n.remaining(Int(bot.remainingPercent.rounded()))
+            )
+            ProgressView(value: min(max(bot.usedPercent, 0), 100), total: 100)
+                .progressViewStyle(UsageProgressStyle(color: thresholdColor(bot.usedPercent)))
+            VStack(alignment: .leading, spacing: 4) {
+                labeledRow(L10n.nextReset, formatCountdown(bot.resetsIn) ?? L10n.unknown)
+                if let end = bot.periodEnd {
+                    labeledRow(L10n.resetAt, Formatters.shortDateTime.string(from: end))
+                }
+            }
+        } else if let error = model.botError, !model.isRefreshing {
+            Divider().padding(.vertical, 2)
+            Text(L10n.botSection)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(error)
+                .font(.caption2)
+                .foregroundStyle(.orange)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func botSubtitle(_ bot: BotUsageSnapshot) -> String {
+        if let label = bot.planLabel, !label.isEmpty {
+            return "\(L10n.usedPrefix) · \(bot.cycleLabel) · \(label)"
+        }
+        return "\(L10n.usedPrefix) · \(bot.cycleLabel)"
+    }
+
+    private func meterHeader(
+        title: String,
+        percent: Double,
+        subtitle: String,
+        remaining: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            HStack(alignment: .lastTextBaseline) {
+                Text("\(Int(percent.rounded()))%")
+                    .font(.system(size: 34, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(thresholdColor(percent))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(remaining)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
         }
     }
 
@@ -213,6 +271,16 @@ struct MenuContentView: View {
                 model.openBillingPage()
             } label: {
                 Label(L10n.openBilling, systemImage: "creditcard")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+
+            Button {
+                model.openBotUsagePage()
+            } label: {
+                Label(L10n.openBotUsage, systemImage: "cpu")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
             }

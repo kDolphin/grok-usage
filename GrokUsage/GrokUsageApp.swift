@@ -28,11 +28,11 @@ struct GrokUsageApp: App {
         switch model.state {
         case .failed:
             return "exclamationmark.triangle.fill"
-        case .loaded(let snap) where snap.usedPercent >= 90:
-            return "flame.fill"
-        case .loaded(let snap) where snap.usedPercent >= 70:
-            return "bolt.fill"
-        case .loaded:
+        case .loaded(let snap):
+            let bot = model.botSnapshot?.usedPercent ?? 0
+            let peak = max(snap.usedPercent, bot)
+            if peak >= 90 { return "flame.fill" }
+            if peak >= 70 { return "bolt.fill" }
             return "sparkles"
         default:
             return "sparkles"

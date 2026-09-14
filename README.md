@@ -2,10 +2,10 @@
 
 **English** | **[简体中文](README.zh-CN.md)**
 
-A lightweight macOS menu bar app that shows your **Grok weekly usage** and **time until the next reset**.
+A lightweight macOS menu bar app that shows your **SuperGrok weekly usage**, **Grok Bot weekly usage** (separate pool), and **time until the next reset**.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.8-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.9-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>
@@ -14,10 +14,10 @@ A lightweight macOS menu bar app that shows your **Grok weekly usage** and **tim
 
 ## Features
 
-- **Menu bar readout** — e.g. `Grok 46% · 4d5h`
-- **Popover details** — progress, reset time, product split (Build / Chat / Api …), extra credits
+- **Menu bar readout** — e.g. `Grok 46% · Bot 34% · 4d5h`
+- **Popover details** — SuperGrok progress, product split (Build / Chat / Api …), extra credits, plus separate Grok Bot weekly meter
 - **Background refresh** — about every 20 minutes while awake; sleep pauses requests
-- **Threshold alerts** — notify once per period at 20 / 40 / 60 / 80 / 90 / 95 / 98%
+- **Threshold alerts** — notify once per period at 20 / 40 / 60 / 80 / 90 / 95 / 98% (SuperGrok and Bot independently)
 - **Launch at login**
 - **Auto token refresh** — renews OIDC access tokens via `refresh_token` (usually no daily re-login)
 - **Language** — follows macOS language (English / Simplified Chinese), including per-app language in System Settings
@@ -57,6 +57,7 @@ cp -R "build/Grok Usage.app" /Applications/
 
 - macOS 13 or later
 - [Grok Build](https://x.ai/build) installed and signed in at least once (`~/.grok/auth.json`)
+- Optional: [Grok Bot](https://grok.com/bot) signed in once (for the separate Bot weekly meter)
 
 ```bash
 grok login   # only if you have never signed in
@@ -73,9 +74,9 @@ grok login   # only if you have never signed in
 
 | Action | Detail |
 |--------|--------|
-| Read | `~/.grok/auth.json` (shared with Grok Build) |
-| Write | May update tokens in the same file on refresh |
-| Network | `auth.x.ai` (token refresh), `cli-chat-proxy.grok.com` (usage metadata) |
+| Read | `~/.grok/auth.json` (shared with Grok Build); Grok Bot local secrets + Keychain (Bot meter only) |
+| Write | May update tokens in `auth.json` on refresh |
+| Network | `auth.x.ai` (token refresh), `cli-chat-proxy.grok.com` (SuperGrok), `api2.cursor.sh` (Grok Bot) |
 | Not sent | Your code, chats, or project files |
 
 No model calls — only billing metadata.

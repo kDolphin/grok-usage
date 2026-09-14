@@ -29,6 +29,9 @@
 "Weekly" = "周额度";
 "Monthly" = "月额度";
 "Quota" = "额度";
+"SuperGrok" = "SuperGrok";
+"Grok Bot" = "Grok Bot";
+"Open Grok Bot Usage" = "打开 Grok Bot 用量";
 
 // Countdown
 "soon" = "即将重置";
@@ -41,6 +44,7 @@
 
 // Accessibility
 "Grok usage %1$d%%, %2$@ resets in %3$@" = "Grok 已用 %1$d%%，%2$@重置剩余 %3$@";
+"Grok Bot %d%%" = "Grok Bot %d%%";
 "Grok usage failed: %@" = "Grok 用量读取失败：%@";
 "Grok usage loading" = "Grok 用量加载中";
 
@@ -68,8 +72,19 @@
 "Could not parse usage response." = "用量接口返回了无法解析的数据。";
 "Request timed out. Check the network and try again." = "请求超时。请检查网络后重试。";
 
+// Grok Bot
+"Grok Bot not signed in. Open Grok Bot once, then refresh." = "尚未登录 Grok Bot。请先打开一次 Grok Bot，然后刷新。";
+"Could not read Grok Bot login data." = "无法读取 Grok Bot 登录数据。";
+"No Grok Bot account found. Sign in inside Grok Bot, then refresh." = "未找到 Grok Bot 账号。请在 Grok Bot 中登录后刷新。";
+"Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once." = "无法从钥匙串解锁 Grok Bot 凭证。请在弹窗中允许访问，或先打开一次 Grok Bot。";
+"Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh." = "无法解密 Grok Bot 凭证。请先打开一次 Grok Bot，然后刷新。";
+"Grok Bot session token missing. Open Grok Bot once, then refresh." = "缺少 Grok Bot 会话。请先打开一次 Grok Bot，然后刷新。";
+"Grok Bot session expired. Open Grok Bot once, then refresh." = "Grok Bot 会话已过期。请先打开一次 Grok Bot，然后刷新。";
+
 // Notifications
 "Grok usage %d%%" = "Grok 用量 %d%%";
 "About %1$d%% used (%2$@)" = "当前已用约 %1$d%%（%2$@）";
+"Grok Bot usage %d%%" = "Grok Bot 用量 %d%%";
+"Grok Bot about %d%% used" = "Grok Bot 当前已用约 %d%%";
 "; resets in %@" = "，重置还剩 %@";
 " Quota is tight — pace your usage." = "额度紧张，注意控制使用。";

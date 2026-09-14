@@ -2,10 +2,10 @@
 
 **[English](README.md)** | **简体中文**
 
-轻量 macOS 菜单栏应用：显示 **Grok 周用量** 与 **下次重置倒计时**。
+轻量 macOS 菜单栏应用：显示 **SuperGrok 周用量**、**Grok Bot 周用量**（独立配额）与 **下次重置倒计时**。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.8-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.9-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>
@@ -14,10 +14,10 @@
 
 ## 功能
 
-- **菜单栏读数** — 如 `Grok 46% · 4d5h`
-- **下拉详情** — 进度、重置时间、产品占比、额外额度
+- **菜单栏读数** — 如 `Grok 46% · Bot 34% · 4d5h`
+- **下拉详情** — SuperGrok 进度、产品占比、额外额度，以及独立的 Grok Bot 周用量
 - **后台刷新** — 清醒时约每 20 分钟；睡眠时不请求
-- **阈值告警** — 20 / 40 / 60 / 80 / 90 / 95 / 98% 每档每周期一次
+- **阈值告警** — 20 / 40 / 60 / 80 / 90 / 95 / 98% 每档每周期一次（SuperGrok 与 Bot 各自独立）
 - **登录时启动**
 - **自动续期 token** — 用 `refresh_token` 刷新（一般不必每天重新登录）
 - **语言** — 跟随 macOS（英/简中），支持「为 App 单独设置语言」
@@ -57,6 +57,7 @@ cp -R "build/Grok Usage.app" /Applications/
 
 - macOS 13 或更高
 - 已安装 [Grok Build](https://x.ai/build) 并至少登录过一次（`~/.grok/auth.json`）
+- 可选：已登录 [Grok Bot](https://grok.com/bot)（用于独立的 Bot 周用量）
 
 ```bash
 grok login   # 从未登录时才需要
@@ -73,9 +74,9 @@ grok login   # 从未登录时才需要
 
 | 行为 | 说明 |
 |------|------|
-| 读取 | `~/.grok/auth.json`（与 Grok Build 共用） |
-| 写入 | 续期时可能更新同一文件中的 token |
-| 网络 | `auth.x.ai`、`cli-chat-proxy.grok.com` |
+| 读取 | `~/.grok/auth.json`（与 Grok Build 共用）；Grok Bot 本地密钥 + 钥匙串（仅 Bot 用量） |
+| 写入 | 续期时可能更新 `auth.json` 中的 token |
+| 网络 | `auth.x.ai`、`cli-chat-proxy.grok.com`（SuperGrok）、`api2.cursor.sh`（Grok Bot） |
 | 不上传 | 代码、会话、工程文件 |
 
 不调用大模型，只读额度元数据。

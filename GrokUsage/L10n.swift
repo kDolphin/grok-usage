@@ -38,6 +38,10 @@ enum L10n {
     static var monthlyQuota: String { String(localized: "Monthly") }
     static var quota: String { String(localized: "Quota") }
 
+    static var supergrokSection: String { String(localized: "SuperGrok") }
+    static var botSection: String { String(localized: "Grok Bot") }
+    static var openBotUsage: String { String(localized: "Open Grok Bot Usage") }
+
     static func thresholdLabel(_ percent: Double) -> String {
         if percent >= 90 { return statusCritical }
         if percent >= 70 { return statusElevated }
@@ -76,6 +80,10 @@ enum L10n {
             cycle,
             reset
         )
+    }
+
+    static func a11yBot(used: Int) -> String {
+        String(format: String(localized: "Grok Bot %d%%"), used)
     }
 
     static func a11yFailed(_ message: String) -> String {
@@ -142,6 +150,30 @@ enum L10n {
         String(localized: "Request timed out. Check the network and try again.")
     }
 
+    // MARK: - Grok Bot auth / fetch
+
+    static var botAuthMissing: String {
+        String(localized: "Grok Bot not signed in. Open Grok Bot once, then refresh.")
+    }
+    static var botAuthInvalid: String {
+        String(localized: "Could not read Grok Bot login data.")
+    }
+    static var botAuthNoAccount: String {
+        String(localized: "No Grok Bot account found. Sign in inside Grok Bot, then refresh.")
+    }
+    static var botAuthKeychain: String {
+        String(localized: "Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once.")
+    }
+    static var botAuthDecryptFailed: String {
+        String(localized: "Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh.")
+    }
+    static var botAuthNoToken: String {
+        String(localized: "Grok Bot session token missing. Open Grok Bot once, then refresh.")
+    }
+    static var botFetchUnauthorized: String {
+        String(localized: "Grok Bot session expired. Open Grok Bot once, then refresh.")
+    }
+
     // MARK: - Notifications
 
     static func alertTitle(_ threshold: Int) -> String {
@@ -150,6 +182,19 @@ enum L10n {
 
     static func alertBody(used: Int, cycle: String, countdown: String?) -> String {
         var body = String(format: String(localized: "About %1$d%% used (%2$@)"), used, cycle)
+        if let countdown {
+            body += String(format: String(localized: "; resets in %@"), countdown)
+        }
+        body += "."
+        return body
+    }
+
+    static func botAlertTitle(_ threshold: Int) -> String {
+        String(format: String(localized: "Grok Bot usage %d%%"), threshold)
+    }
+
+    static func botAlertBody(used: Int, countdown: String?) -> String {
+        var body = String(format: String(localized: "Grok Bot about %d%% used"), used)
         if let countdown {
             body += String(format: String(localized: "; resets in %@"), countdown)
         }

@@ -10,7 +10,11 @@ enum UsageCache {
         return dir.appendingPathComponent("last-snapshot.json")
     }
 
-    static func save(_ snapshot: UsageSnapshot, email: String?) {
+    static func save(
+        _ snapshot: UsageSnapshot,
+        bot: BotUsageSnapshot?,
+        email: String?
+    ) {
         var payload: [String: Any] = [
             "usedPercent": snapshot.usedPercent,
             "productUsage": snapshot.productUsage.map { [
@@ -36,6 +40,9 @@ enum UsageCache {
         if let email {
             payload["email"] = email
         }
+        if let bot {
+            payload["bot"] = botPayload(bot)
+        }
 
         guard let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted]) else {
             return
@@ -43,7 +50,7 @@ enum UsageCache {
         try? data.write(to: fileURL, options: .atomic)
     }
 
-    static func load() -> (snapshot: UsageSnapshot, email: String?)? {
+    static func load() -> (snapshot: UsageSnapshot, bot: BotUsageSnapshot?, email: String?)? {
         guard let data = try? Data(contentsOf: fileURL),
               let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return nil }
@@ -80,7 +87,51 @@ enum UsageCache {
             fetchedAt: parseDate(root["fetchedAt"] as? String) ?? Date.distantPast,
             source: (root["source"] as? String).map { "\($0)+cache" } ?? "cache"
         )
-        return (snapshot, root["email"] as? String)
+
+        let bot = parseBot(root["bot"] as? [String: Any])
+        return (snapshot, bot, root["email"] as? String)
+    }
+
+    private static func botPayload(_ bot: BotUsageSnapshot) -> [String: Any] {
+        var payload: [String: Any] = [
+            "usedPercent": bot.usedPercent,
+            "fetchedAt": iso(bot.fetchedAt),
+            "source": bot.source,
+        ]
+        if let periodStart = bot.periodStart {
+            payload["periodStart"] = iso(periodStart)
+        }
+        if let periodEnd = bot.periodEnd {
+            payload["periodEnd"] = iso(periodEnd)
+        }
+        if let planLabel = bot.planLabel {
+            payload["planLabel"] = planLabel
+        }
+        if let hasAvailableUsage = bot.hasAvailableUsage {
+            payload["hasAvailableUsage"] = hasAvailableUsage
+        }
+        return payload
+    }
+
+    private static func parseBot(_ root: [String: Any]?) -> BotUsageSnapshot? {
+        guard let root else { return nil }
+        let used: Double
+        if let p = root["usedPercent"] as? Double {
+            used = p
+        } else if let p = root["usedPercent"] as? Int {
+            used = Double(p)
+        } else {
+            return nil
+        }
+        return BotUsageSnapshot(
+            usedPercent: used,
+            periodStart: parseDate(root["periodStart"] as? String),
+            periodEnd: parseDate(root["periodEnd"] as? String),
+            planLabel: root["planLabel"] as? String,
+            hasAvailableUsage: root["hasAvailableUsage"] as? Bool,
+            fetchedAt: parseDate(root["fetchedAt"] as? String) ?? Date.distantPast,
+            source: (root["source"] as? String).map { "\($0)+cache" } ?? "cache"
+        )
     }
 
     private static func iso(_ date: Date) -> String {

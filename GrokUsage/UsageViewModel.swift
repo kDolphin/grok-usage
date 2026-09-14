@@ -6,6 +6,8 @@ import SwiftUI
 @MainActor
 final class UsageViewModel: ObservableObject {
     @Published private(set) var state: UsageLoadState = .idle
+    @Published private(set) var botSnapshot: BotUsageSnapshot?
+    @Published private(set) var botError: String?
     @Published private(set) var identity: AuthIdentity?
     @Published private(set) var lastError: String?
     /// True only while a background fetch is actively running.
@@ -30,7 +32,7 @@ final class UsageViewModel: ObservableObject {
     var menuBarTitle: String {
         switch state {
         case .loaded(let snap):
-            return formatBar(snap)
+            return formatBar(snap, bot: botSnapshot)
         case .failed:
             return "Grok · !"
         case .idle, .loading:
@@ -42,11 +44,15 @@ final class UsageViewModel: ObservableObject {
         switch state {
         case .loaded(let snap):
             let reset = formatCountdown(snap.resetsIn) ?? L10n.unknown
-            return L10n.a11yLoaded(
+            var label = L10n.a11yLoaded(
                 used: Int(snap.usedPercent.rounded()),
                 cycle: snap.cycleLabel,
                 reset: reset
             )
+            if let bot = botSnapshot {
+                label += " · " + L10n.a11yBot(used: Int(bot.usedPercent.rounded()))
+            }
+            return label
         case .failed(let message):
             return L10n.a11yFailed(message)
         default:
@@ -117,6 +123,13 @@ final class UsageViewModel: ObservableObject {
         // Prefer snapshot age when we have live data.
         if case .loaded(let snap) = state {
             if Date().timeIntervalSince(snap.fetchedAt) < staleAfter {
+                // Also refresh if bot is missing and might become available.
+                if botSnapshot == nil, botError == nil {
+                    return true
+                }
+                if let bot = botSnapshot, Date().timeIntervalSince(bot.fetchedAt) >= staleAfter {
+                    return true
+                }
                 return false
             }
         }
@@ -178,19 +191,40 @@ final class UsageViewModel: ObservableObject {
         // Only adopt cache when we have nothing better on screen.
         if case .loaded = state { return }
         state = .loaded(cached.snapshot)
+        if let bot = cached.bot {
+            botSnapshot = bot
+            botError = nil
+        }
+    }
+
+    private struct FetchBundle {
+        var identity: AuthIdentity
+        var snapshot: UsageSnapshot
+        var bot: Result<BotUsageSnapshot, Error>
     }
 
     private func apply(
-        result: Result<(AuthIdentity, UsageSnapshot), Error>,
+        result: Result<FetchBundle, Error>,
         hadLoadedData: Bool
     ) async {
         switch result {
-        case .success(let (identity, snapshot)):
-            self.identity = identity
-            self.state = .loaded(snapshot)
+        case .success(let bundle):
+            self.identity = bundle.identity
+            self.state = .loaded(bundle.snapshot)
             self.lastError = nil
-            UsageCache.save(snapshot, email: identity.email)
-            UsageAlerts.evaluate(snapshot: snapshot)
+            UsageAlerts.evaluate(snapshot: bundle.snapshot)
+
+            switch bundle.bot {
+            case .success(let bot):
+                self.botSnapshot = bot
+                self.botError = nil
+                UsageAlerts.evaluateBot(snapshot: bot)
+            case .failure(let error):
+                // Fail-open: keep previous bot snapshot if any; surface soft error.
+                self.botError = friendlyBotMessage(for: error)
+            }
+
+            UsageCache.save(bundle.snapshot, bot: botSnapshot, email: bundle.identity.email)
 
         case .failure(let error):
             let message = friendlyMessage(for: error)
@@ -205,26 +239,40 @@ final class UsageViewModel: ObservableObject {
         }
     }
 
-    private nonisolated static func fetchInBackground() async -> Result<(AuthIdentity, UsageSnapshot), Error> {
+    private nonisolated static func fetchInBackground() async -> Result<FetchBundle, Error> {
         do {
             // Silently renew OIDC access token via refresh_token when near/past expiry
             // (same mechanism as running `grok` — no interactive `grok login` needed).
             var identity = try await AuthStore.loadValidIdentity()
 
+            let snapshot: UsageSnapshot
             do {
-                let snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
-                return .success((identity, snapshot))
+                snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
             } catch let fetch as UsageFetcherError {
                 // One retry after forced refresh on auth failures.
                 if case .unauthorized = fetch {
                     let cred = try AuthStore.loadCredential()
                     let refreshed = try await AuthStore.refreshCredential(cred)
                     identity = refreshed.identity
-                    let snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
-                    return .success((identity, snapshot))
+                    snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
+                } else {
+                    throw fetch
                 }
-                throw fetch
             }
+
+            let bot = await fetchBotInBackground()
+            return .success(FetchBundle(identity: identity, snapshot: snapshot, bot: bot))
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    /// Independent of SuperGrok — errors become soft UI state, not a hard failure.
+    private nonisolated static func fetchBotInBackground() async -> Result<BotUsageSnapshot, Error> {
+        do {
+            let token = try BotAuthStore.loadAccessToken()
+            let snapshot = try await BotUsageFetcher.fetch(accessToken: token)
+            return .success(snapshot)
         } catch {
             return .failure(error)
         }
@@ -238,6 +286,12 @@ final class UsageViewModel: ObservableObject {
 
     func openBillingPage() {
         if let url = URL(string: "https://grok.com/?_s=billing") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    func openBotUsagePage() {
+        if let url = URL(string: "https://cursor.com/dashboard/spending") {
             NSWorkspace.shared.open(url)
         }
     }
@@ -262,12 +316,16 @@ final class UsageViewModel: ObservableObject {
         }
     }
 
-    private func formatBar(_ snap: UsageSnapshot) -> String {
+    private func formatBar(_ snap: UsageSnapshot, bot: BotUsageSnapshot?) -> String {
         let pct = Int(snap.usedPercent.rounded())
-        if let countdown = formatCountdown(snap.resetsIn, compact: true) {
-            return "Grok \(pct)% · \(countdown)"
+        var parts = ["Grok \(pct)%"]
+        if let bot {
+            parts.append("Bot \(Int(bot.usedPercent.rounded()))%")
         }
-        return "Grok \(pct)%"
+        if let countdown = formatCountdown(snap.resetsIn, compact: true) {
+            parts.append(countdown)
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func friendlyMessage(for error: Error) -> String {
@@ -275,6 +333,16 @@ final class UsageViewModel: ObservableObject {
             return auth.localizedDescription
         }
         if let fetch = error as? UsageFetcherError {
+            return fetch.localizedDescription
+        }
+        return error.localizedDescription
+    }
+
+    private func friendlyBotMessage(for error: Error) -> String {
+        if let auth = error as? BotAuthStoreError {
+            return auth.localizedDescription
+        }
+        if let fetch = error as? BotUsageFetcherError {
             return fetch.localizedDescription
         }
         return error.localizedDescription

@@ -66,6 +66,28 @@ struct UsageSnapshot: Equatable {
     }
 }
 
+/// Grok Bot weekly pool — separate from SuperGrok / Build credits.
+struct BotUsageSnapshot: Equatable {
+    var usedPercent: Double
+    var periodStart: Date?
+    var periodEnd: Date?
+    var planLabel: String?
+    var hasAvailableUsage: Bool?
+    var fetchedAt: Date
+    var source: String
+
+    var remainingPercent: Double {
+        max(0, 100 - usedPercent)
+    }
+
+    var resetsIn: TimeInterval? {
+        guard let periodEnd else { return nil }
+        return periodEnd.timeIntervalSinceNow
+    }
+
+    var cycleLabel: String { L10n.weeklyQuota }
+}
+
 enum UsageLoadState: Equatable {
     case idle
     case loading
