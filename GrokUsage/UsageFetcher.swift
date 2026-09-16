@@ -141,6 +141,8 @@ enum UsageFetcher {
 
         let prepaid = moneyCents(config["prepaidBalance"])
         let unified = (config["isUnifiedBillingUser"] as? Bool) ?? false
+        let onDemandUsed = moneyCents(config["onDemandUsed"])
+        let onDemandCap = moneyCents(config["onDemandCap"])
 
         return UsageSnapshot(
             usedPercent: usedPercent,
@@ -150,9 +152,47 @@ enum UsageFetcher {
             productUsage: products,
             prepaidBalanceCents: prepaid,
             isUnifiedBilling: unified,
+            planTier: nil,
+            onDemandUsedCents: onDemandUsed,
+            onDemandCapCents: onDemandCap,
             fetchedAt: Date(),
             source: "cli-chat-proxy"
         )
+    }
+
+    /// Optional enrichment: plan tier from `/v1/user?include=subscription`.
+    /// Failures are ignored by the caller so billing still works alone.
+    static func fetchPlanTier(token: String) async -> String? {
+        let url = URL(string: "https://cli-chat-proxy.grok.com/v1/user?include=subscription")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("xai-grok-cli/\(clientVersion)", forHTTPHeaderField: "User-Agent")
+        request.setValue(clientVersion, forHTTPHeaderField: "x-grok-client-version")
+        request.setValue("cli", forHTTPHeaderField: "x-grok-client-mode")
+        request.setValue("grok-usage-menubar", forHTTPHeaderField: "x-grok-client-identifier")
+        let requestToSend = request
+
+        do {
+            let (data, response) = try await withThrowingTimeout(seconds: overallTimeout) {
+                try await session.data(for: requestToSend)
+            }
+            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                return nil
+            }
+            guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return nil
+            }
+            if let tiers = root["subscriptionTier"] as? String, !tiers.isEmpty {
+                return tiers
+            }
+            return nil
+        } catch {
+            return nil
+        }
     }
 
     /// JSON numbers may arrive as Int, Double, or NSNumber.

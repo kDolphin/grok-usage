@@ -32,6 +32,16 @@
 "SuperGrok" = "SuperGrok";
 "Grok Bot" = "Grok Bot";
 "Open Grok Bot Usage" = "Open Grok Bot Usage";
+"Plan" = "Plan";
+"Cursor plan" = "Cursor plan";
+"On-demand" = "On-demand";
+"Off" = "Off";
+"On" = "On";
+"Access" = "Access";
+"Granted" = "Granted";
+"Denied" = "Denied";
+"Pending" = "Pending";
+"Weekly Bot allowance is exhausted." = "Weekly Bot allowance is exhausted.";
 
 // Countdown
 "soon" = "soon";

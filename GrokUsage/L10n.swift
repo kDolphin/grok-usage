@@ -42,6 +42,19 @@ enum L10n {
     static var botSection: String { String(localized: "Grok Bot") }
     static var openBotUsage: String { String(localized: "Open Grok Bot Usage") }
 
+    static var plan: String { String(localized: "Plan") }
+    static var cursorPlan: String { String(localized: "Cursor plan") }
+    static var onDemand: String { String(localized: "On-demand") }
+    static var onDemandOff: String { String(localized: "Off") }
+    static var onDemandOn: String { String(localized: "On") }
+    static var botAccess: String { String(localized: "Access") }
+    static var botAccessGranted: String { String(localized: "Granted") }
+    static var botAccessDenied: String { String(localized: "Denied") }
+    static var botAccessPending: String { String(localized: "Pending") }
+    static var botQuotaExhausted: String {
+        String(localized: "Weekly Bot allowance is exhausted.")
+    }
+
     static func thresholdLabel(_ percent: Double) -> String {
         if percent >= 90 { return statusCritical }
         if percent >= 70 { return statusElevated }

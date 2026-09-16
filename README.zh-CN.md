@@ -5,7 +5,7 @@
 轻量 macOS 菜单栏应用：显示 **SuperGrok 周用量**、**Grok Bot 周用量**（独立配额）与 **下次重置倒计时**。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.9-blue" />
+  <img src="https://img.shields.io/badge/version-0.3.0-blue" />
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue" />
   <img src="https://img.shields.io/badge/license-MIT-orange" />
 </p>

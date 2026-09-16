@@ -38,6 +38,10 @@ struct UsageSnapshot: Equatable {
     var productUsage: [ProductUsage]
     var prepaidBalanceCents: Int?
     var isUnifiedBilling: Bool
+    /// e.g. `GrokPro` from `/v1/user?include=subscription`.
+    var planTier: String?
+    var onDemandUsedCents: Int?
+    var onDemandCapCents: Int?
     var fetchedAt: Date
     var source: String
 
@@ -64,6 +68,26 @@ struct UsageSnapshot: Equatable {
             return L10n.quota
         }
     }
+
+    var planDisplayName: String? {
+        guard let planTier, !planTier.isEmpty else { return nil }
+        switch planTier {
+        case "GrokPro": return "SuperGrok"
+        case "GrokProPlus", "GrokPlus": return "SuperGrok Plus"
+        case "GrokHeavy": return "SuperGrok Heavy"
+        case "GrokLite": return "SuperGrok Lite"
+        default:
+            return planTier
+                .replacingOccurrences(of: "Grok", with: "Grok ")
+                .trimmingCharacters(in: .whitespaces)
+        }
+    }
+
+    /// Nil when the API omitted on-demand fields entirely.
+    var onDemandEnabled: Bool? {
+        guard let cap = onDemandCapCents else { return nil }
+        return cap > 0
+    }
 }
 
 /// Grok Bot weekly pool — separate from SuperGrok / Build credits.
@@ -71,8 +95,18 @@ struct BotUsageSnapshot: Equatable {
     var usedPercent: Double
     var periodStart: Date?
     var periodEnd: Date?
+    /// Included Bot pool label, e.g. `SuperGrok`.
     var planLabel: String?
+    /// Cursor plan name reported alongside Bot, e.g. `Free`.
+    var cursorPlanName: String?
     var hasAvailableUsage: Bool?
+    /// Whether usage-based / on-demand spend is actually enabled (not merely "eligible").
+    var onDemandEnabled: Bool?
+    var onDemandUsedCents: Int?
+    var onDemandLimitCents: Int?
+    /// Raw access state from GetSandAccessStatus, e.g. `SAND_ACCESS_STATE_GRANTED`.
+    var accessState: String?
+    var accessBlockReason: String?
     var fetchedAt: Date
     var source: String
 
@@ -86,6 +120,25 @@ struct BotUsageSnapshot: Equatable {
     }
 
     var cycleLabel: String { L10n.weeklyQuota }
+
+    var accessGranted: Bool? {
+        guard let accessState else { return nil }
+        return accessState == "SAND_ACCESS_STATE_GRANTED"
+    }
+
+    var accessDisplayName: String? {
+        guard let accessState else { return nil }
+        switch accessState {
+        case "SAND_ACCESS_STATE_GRANTED": return L10n.botAccessGranted
+        case "SAND_ACCESS_STATE_DENIED", "SAND_ACCESS_STATE_BLOCKED": return L10n.botAccessDenied
+        case "SAND_ACCESS_STATE_PENDING": return L10n.botAccessPending
+        default:
+            return accessState
+                .replacingOccurrences(of: "SAND_ACCESS_STATE_", with: "")
+                .replacingOccurrences(of: "_", with: " ")
+                .capitalized
+        }
+    }
 }
 
 enum UsageLoadState: Equatable {

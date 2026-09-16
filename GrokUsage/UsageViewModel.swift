@@ -245,16 +245,28 @@ final class UsageViewModel: ObservableObject {
             // (same mechanism as running `grok` — no interactive `grok login` needed).
             var identity = try await AuthStore.loadValidIdentity()
 
-            let snapshot: UsageSnapshot
+            var snapshot: UsageSnapshot
             do {
-                snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
+                let token = identity.accessToken
+                async let billing = UsageFetcher.fetch(token: token)
+                async let plan = UsageFetcher.fetchPlanTier(token: token)
+                snapshot = try await billing
+                if let planTier = await plan {
+                    snapshot.planTier = planTier
+                }
             } catch let fetch as UsageFetcherError {
                 // One retry after forced refresh on auth failures.
                 if case .unauthorized = fetch {
                     let cred = try AuthStore.loadCredential()
                     let refreshed = try await AuthStore.refreshCredential(cred)
                     identity = refreshed.identity
-                    snapshot = try await UsageFetcher.fetch(token: identity.accessToken)
+                    let token = identity.accessToken
+                    async let billing = UsageFetcher.fetch(token: token)
+                    async let plan = UsageFetcher.fetchPlanTier(token: token)
+                    snapshot = try await billing
+                    if let planTier = await plan {
+                        snapshot.planTier = planTier
+                    }
                 } else {
                     throw fetch
                 }

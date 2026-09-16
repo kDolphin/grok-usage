@@ -32,6 +32,16 @@
 "SuperGrok" = "SuperGrok";
 "Grok Bot" = "Grok Bot";
 "Open Grok Bot Usage" = "打开 Grok Bot 用量";
+"Plan" = "套餐";
+"Cursor plan" = "Cursor 套餐";
+"On-demand" = "按量计费";
+"Off" = "关闭";
+"On" = "开启";
+"Access" = "访问权限";
+"Granted" = "已开通";
+"Denied" = "未开通";
+"Pending" = "待开通";
+"Weekly Bot allowance is exhausted." = "本周 Bot 额度已用尽。";
 
 // Countdown
 "soon" = "即将重置";

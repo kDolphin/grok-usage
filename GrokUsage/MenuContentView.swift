@@ -113,7 +113,7 @@ struct MenuContentView: View {
             meterHeader(
                 title: L10n.supergrokSection,
                 percent: snap.usedPercent,
-                subtitle: "\(L10n.usedPrefix) · \(snap.cycleLabel)",
+                subtitle: grokSubtitle(snap),
                 remaining: L10n.remaining(Int(snap.remainingPercent.rounded()))
             )
 
@@ -121,12 +121,20 @@ struct MenuContentView: View {
                 .progressViewStyle(UsageProgressStyle(color: thresholdColor(snap.usedPercent)))
 
             VStack(alignment: .leading, spacing: 4) {
+                if let plan = snap.planDisplayName {
+                    labeledRow(L10n.plan, plan)
+                }
                 labeledRow(L10n.nextReset, formatCountdown(snap.resetsIn) ?? L10n.unknown)
                 if let end = snap.periodEnd {
                     labeledRow(L10n.resetAt, Formatters.shortDateTime.string(from: end))
                 }
+                // Prepaid balance is the post-weekly overflow for SuperGrok (not Cursor-style on-demand).
                 if let cents = snap.prepaidBalanceCents {
                     labeledRow(L10n.extraCredits, formatUSD(cents))
+                }
+                // Only show SuperGrok on-demand when a positive spend cap is configured.
+                if let onDemand = superGrokOnDemandLabel(used: snap.onDemandUsedCents, cap: snap.onDemandCapCents) {
+                    labeledRow(L10n.onDemand, onDemand)
                 }
                 HStack(alignment: .firstTextBaseline) {
                     Text(L10n.refreshedAt)
@@ -182,9 +190,27 @@ struct MenuContentView: View {
             ProgressView(value: min(max(bot.usedPercent, 0), 100), total: 100)
                 .progressViewStyle(UsageProgressStyle(color: thresholdColor(bot.usedPercent)))
             VStack(alignment: .leading, spacing: 4) {
+                if let plan = bot.planLabel, !plan.isEmpty {
+                    labeledRow(L10n.plan, plan)
+                }
+                if let cursorPlan = bot.cursorPlanName, !cursorPlan.isEmpty {
+                    labeledRow(L10n.cursorPlan, cursorPlan)
+                }
+                if let access = bot.accessDisplayName {
+                    labeledRow(L10n.botAccess, access)
+                }
                 labeledRow(L10n.nextReset, formatCountdown(bot.resetsIn) ?? L10n.unknown)
                 if let end = bot.periodEnd {
                     labeledRow(L10n.resetAt, Formatters.shortDateTime.string(from: end))
+                }
+                if let onDemand = botOnDemandLabel(bot) {
+                    labeledRow(L10n.onDemand, onDemand)
+                }
+                if bot.hasAvailableUsage == false {
+                    Text(L10n.botQuotaExhausted)
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         } else if let error = model.botError, !model.isRefreshing {
@@ -199,11 +225,42 @@ struct MenuContentView: View {
         }
     }
 
+    private func grokSubtitle(_ snap: UsageSnapshot) -> String {
+        if let plan = snap.planDisplayName {
+            return "\(L10n.usedPrefix) · \(snap.cycleLabel) · \(plan)"
+        }
+        return "\(L10n.usedPrefix) · \(snap.cycleLabel)"
+    }
+
     private func botSubtitle(_ bot: BotUsageSnapshot) -> String {
         if let label = bot.planLabel, !label.isEmpty {
             return "\(L10n.usedPrefix) · \(bot.cycleLabel) · \(label)"
         }
         return "\(L10n.usedPrefix) · \(bot.cycleLabel)"
+    }
+
+    /// SuperGrok `onDemandCap` — hide when 0/off; prepaid "Extra credits" covers weekly overflow.
+    private func superGrokOnDemandLabel(used: Int?, cap: Int?) -> String? {
+        guard let cap, cap > 0 else { return nil }
+        let usedCents = used ?? 0
+        return "\(formatUSD(usedCents)) / \(formatUSD(cap))"
+    }
+
+    /// Bot on-demand must use the real enabled flag (`usage-summary` / `GetHardLimit`),
+    /// not sand `eligible` (that only means the account *can* turn it on).
+    private func botOnDemandLabel(_ bot: BotUsageSnapshot) -> String? {
+        guard let enabled = bot.onDemandEnabled else { return nil }
+        if !enabled {
+            return L10n.onDemandOff
+        }
+        if let limit = bot.onDemandLimitCents, limit > 0 {
+            let used = bot.onDemandUsedCents ?? 0
+            return "\(formatUSD(used)) / \(formatUSD(limit))"
+        }
+        if let used = bot.onDemandUsedCents {
+            return "\(formatUSD(used)) · \(L10n.onDemandOn)"
+        }
+        return L10n.onDemandOn
     }
 
     private func meterHeader(

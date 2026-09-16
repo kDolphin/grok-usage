@@ -37,6 +37,15 @@ enum UsageCache {
         if let prepaid = snapshot.prepaidBalanceCents {
             payload["prepaidBalanceCents"] = prepaid
         }
+        if let planTier = snapshot.planTier {
+            payload["planTier"] = planTier
+        }
+        if let onDemandUsed = snapshot.onDemandUsedCents {
+            payload["onDemandUsedCents"] = onDemandUsed
+        }
+        if let onDemandCap = snapshot.onDemandCapCents {
+            payload["onDemandCapCents"] = onDemandCap
+        }
         if let email {
             payload["email"] = email
         }
@@ -84,6 +93,9 @@ enum UsageCache {
             productUsage: products,
             prepaidBalanceCents: root["prepaidBalanceCents"] as? Int,
             isUnifiedBilling: (root["isUnifiedBilling"] as? Bool) ?? false,
+            planTier: root["planTier"] as? String,
+            onDemandUsedCents: root["onDemandUsedCents"] as? Int,
+            onDemandCapCents: root["onDemandCapCents"] as? Int,
             fetchedAt: parseDate(root["fetchedAt"] as? String) ?? Date.distantPast,
             source: (root["source"] as? String).map { "\($0)+cache" } ?? "cache"
         )
@@ -107,8 +119,26 @@ enum UsageCache {
         if let planLabel = bot.planLabel {
             payload["planLabel"] = planLabel
         }
+        if let cursorPlanName = bot.cursorPlanName {
+            payload["cursorPlanName"] = cursorPlanName
+        }
         if let hasAvailableUsage = bot.hasAvailableUsage {
             payload["hasAvailableUsage"] = hasAvailableUsage
+        }
+        if let onDemandEnabled = bot.onDemandEnabled {
+            payload["onDemandEnabled"] = onDemandEnabled
+        }
+        if let onDemandUsedCents = bot.onDemandUsedCents {
+            payload["onDemandUsedCents"] = onDemandUsedCents
+        }
+        if let onDemandLimitCents = bot.onDemandLimitCents {
+            payload["onDemandLimitCents"] = onDemandLimitCents
+        }
+        if let accessState = bot.accessState {
+            payload["accessState"] = accessState
+        }
+        if let accessBlockReason = bot.accessBlockReason {
+            payload["accessBlockReason"] = accessBlockReason
         }
         return payload
     }
@@ -128,7 +158,13 @@ enum UsageCache {
             periodStart: parseDate(root["periodStart"] as? String),
             periodEnd: parseDate(root["periodEnd"] as? String),
             planLabel: root["planLabel"] as? String,
+            cursorPlanName: root["cursorPlanName"] as? String,
             hasAvailableUsage: root["hasAvailableUsage"] as? Bool,
+            onDemandEnabled: root["onDemandEnabled"] as? Bool,
+            onDemandUsedCents: root["onDemandUsedCents"] as? Int,
+            onDemandLimitCents: root["onDemandLimitCents"] as? Int,
+            accessState: root["accessState"] as? String,
+            accessBlockReason: root["accessBlockReason"] as? String,
             fetchedAt: parseDate(root["fetchedAt"] as? String) ?? Date.distantPast,
             source: (root["source"] as? String).map { "\($0)+cache" } ?? "cache"
         )
