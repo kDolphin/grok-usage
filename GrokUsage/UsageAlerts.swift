@@ -24,6 +24,11 @@ enum UsageAlerts {
         }
     }
 
+    /// Drop persisted threshold state (e.g. on sign-out).
+    static func clear() {
+        try? FileManager.default.removeItem(at: stateURL)
+    }
+
     /// Evaluate SuperGrok / Build weekly usage and post notifications for newly crossed thresholds.
     @MainActor
     static func evaluate(snapshot: UsageSnapshot) {

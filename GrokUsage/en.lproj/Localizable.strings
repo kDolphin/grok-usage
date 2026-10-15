@@ -4,6 +4,20 @@
 "Grok Usage" = "Grok Usage";
 "Error" = "Error";
 "Auth file: ~/.grok/auth.json" = "Auth file: ~/.grok/auth.json";
+"Sign in with browser" = "Sign in with browser";
+"Sign in to SuperGrok with browser" = "Sign in to SuperGrok with browser";
+"Sign in with your xAI / Grok account in the browser. Grok Build CLI is optional." = "Sign in with your xAI / Grok account in the browser. Grok Build CLI is optional.";
+"SuperGrok uses your xAI / Grok account. Bot login is separate below." = "SuperGrok uses your xAI / Grok account. Bot login is separate below.";
+"Waiting for browser sign-in… Confirm this code if asked:" = "Waiting for browser sign-in… Confirm this code if asked:";
+"Code" = "Code";
+"Browser opened. Return here when finished." = "Browser opened. Return here when finished.";
+"Cancel sign-in" = "Cancel sign-in";
+"Sign out" = "Sign out";
+"Sign out of SuperGrok" = "Sign out of SuperGrok";
+"Signed out" = "Signed out";
+"Signed out. Sign in with your browser to load SuperGrok usage." = "Signed out. Sign in with your browser to load SuperGrok usage.";
+"SuperGrok signed out. Bot login below is independent." = "SuperGrok signed out. Bot login below is independent.";
+"Grok Usage signed out" = "Grok Usage signed out";
 "Loading usage…" = "Loading usage…";
 "Used" = "Used";
 "Remaining %d%%" = "Remaining %d%%";
@@ -76,6 +90,10 @@
 "Token refresh failed: %@. Try running `grok` once (usually no full `grok login`)." = "Token refresh failed: %@. Try running `grok` once (usually no full `grok login`).";
 "Invalid response" = "Invalid response";
 "Response missing access_token" = "Response missing access_token";
+"Browser sign-in failed: %@" = "Browser sign-in failed: %@";
+"Browser sign-in was denied." = "Browser sign-in was denied.";
+"Browser sign-in timed out. Try again." = "Browser sign-in timed out. Try again.";
+"Sign-in cancelled." = "Sign-in cancelled.";
 
 // Fetch
 "Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`)." = "Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`).";
@@ -83,13 +101,24 @@
 "Request timed out. Check the network and try again." = "Request timed out. Check the network and try again.";
 
 // Grok Bot
-"Grok Bot not signed in. Open Grok Bot once, then refresh." = "Grok Bot not signed in. Open Grok Bot once, then refresh.";
+"Sign in to Bot with browser" = "Sign in to Bot with browser";
+"Sign out of Bot" = "Sign out of Bot";
+"Sign in with browser for the Bot meter, or use a local Grok Bot login." = "Sign in with browser for the Bot meter, or use a local Grok Bot login.";
+"Using local Grok Bot login. Browser sign-in is optional." = "Using local Grok Bot login. Browser sign-in is optional.";
+"Waiting for Bot browser sign-in…" = "Waiting for Bot browser sign-in…";
+"Bot signed out. Sign in with browser to show Bot usage again." = "Bot signed out. Sign in with browser to show Bot usage again.";
+"Grok Bot not signed in. Use Sign in to Bot with browser, or open Grok Bot once." = "Grok Bot not signed in. Use Sign in to Bot with browser, or open Grok Bot once.";
 "Could not read Grok Bot login data." = "Could not read Grok Bot login data.";
-"No Grok Bot account found. Sign in inside Grok Bot, then refresh." = "No Grok Bot account found. Sign in inside Grok Bot, then refresh.";
-"Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once." = "Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once.";
-"Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh." = "Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh.";
-"Grok Bot session token missing. Open Grok Bot once, then refresh." = "Grok Bot session token missing. Open Grok Bot once, then refresh.";
-"Grok Bot session expired. Open Grok Bot once, then refresh." = "Grok Bot session expired. Open Grok Bot once, then refresh.";
+"No Grok Bot account found. Sign in with browser, or sign in inside Grok Bot." = "No Grok Bot account found. Sign in with browser, or sign in inside Grok Bot.";
+"Could not unlock Bot credentials from Keychain. Allow access when prompted." = "Could not unlock Bot credentials from Keychain. Allow access when prompted.";
+"Could not decrypt Grok Bot credentials. Sign in with browser, or open Grok Bot once." = "Could not decrypt Grok Bot credentials. Sign in with browser, or open Grok Bot once.";
+"Grok Bot session token missing. Sign in with browser, then refresh." = "Grok Bot session token missing. Sign in with browser, then refresh.";
+"Grok Bot session expired. Sign in to Bot with browser again." = "Grok Bot session expired. Sign in to Bot with browser again.";
+"Bot browser sign-in failed: %@" = "Bot browser sign-in failed: %@";
+"Bot browser sign-in was denied." = "Bot browser sign-in was denied.";
+"Bot browser sign-in timed out. Try again." = "Bot browser sign-in timed out. Try again.";
+"Bot browser sign-in cancelled." = "Bot browser sign-in cancelled.";
+"Bot token refresh failed: %@" = "Bot token refresh failed: %@";
 
 // Notifications
 "Grok usage %d%%" = "Grok usage %d%%";

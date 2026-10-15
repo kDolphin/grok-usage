@@ -4,6 +4,20 @@
 "Grok Usage" = "Grok 用量";
 "Error" = "错误";
 "Auth file: ~/.grok/auth.json" = "认证文件：~/.grok/auth.json";
+"Sign in with browser" = "浏览器登录";
+"Sign in to SuperGrok with browser" = "浏览器登录 SuperGrok";
+"Sign in with your xAI / Grok account in the browser. Grok Build CLI is optional." = "在浏览器中用 xAI / Grok 账号登录即可。不必安装 Grok Build CLI。";
+"SuperGrok uses your xAI / Grok account. Bot login is separate below." = "SuperGrok 使用 xAI / Grok 账号；下方 Bot 登录是独立的。";
+"Waiting for browser sign-in… Confirm this code if asked:" = "正在等待浏览器登录… 如提示请确认此验证码：";
+"Code" = "验证码";
+"Browser opened. Return here when finished." = "已打开浏览器。完成后回到这里即可。";
+"Cancel sign-in" = "取消登录";
+"Sign out" = "退出登录";
+"Sign out of SuperGrok" = "退出 SuperGrok 登录";
+"Signed out" = "已退出";
+"Signed out. Sign in with your browser to load SuperGrok usage." = "已退出。请用浏览器登录以查看 SuperGrok 用量。";
+"SuperGrok signed out. Bot login below is independent." = "已退出 SuperGrok。下方 Bot 登录彼此独立。";
+"Grok Usage signed out" = "Grok Usage 已退出登录";
 "Loading usage…" = "正在读取用量…";
 "Used" = "已用";
 "Remaining %d%%" = "剩余 %d%%";
@@ -76,6 +90,10 @@
 "Token refresh failed: %@. Try running `grok` once (usually no full `grok login`)." = "自动续期失败：%@。可尝试运行一次 `grok`（一般不必 `grok login`）。";
 "Invalid response" = "无效响应";
 "Response missing access_token" = "响应缺少 access_token";
+"Browser sign-in failed: %@" = "浏览器登录失败：%@";
+"Browser sign-in was denied." = "浏览器登录被拒绝。";
+"Browser sign-in timed out. Try again." = "浏览器登录超时，请重试。";
+"Sign-in cancelled." = "已取消登录。";
 
 // Fetch
 "Unauthorized. Auto-refresh will be tried; if it still fails, run `grok` once (usually no `grok login`)." = "鉴权失败。将尝试自动续期；若仍失败请运行一次 `grok`（通常不必 `grok login`）。";
@@ -83,13 +101,24 @@
 "Request timed out. Check the network and try again." = "请求超时。请检查网络后重试。";
 
 // Grok Bot
-"Grok Bot not signed in. Open Grok Bot once, then refresh." = "尚未登录 Grok Bot。请先打开一次 Grok Bot，然后刷新。";
+"Sign in to Bot with browser" = "浏览器登录 Bot";
+"Sign out of Bot" = "退出 Bot 登录";
+"Sign in with browser for the Bot meter, or use a local Grok Bot login." = "可用浏览器登录查看 Bot 用量，或沿用本机 Grok Bot 登录。";
+"Using local Grok Bot login. Browser sign-in is optional." = "当前使用本机 Grok Bot 登录；浏览器登录可选。";
+"Waiting for Bot browser sign-in…" = "正在等待 Bot 浏览器登录…";
+"Bot signed out. Sign in with browser to show Bot usage again." = "已退出 Bot。请用浏览器重新登录以显示 Bot 用量。";
+"Grok Bot not signed in. Use Sign in to Bot with browser, or open Grok Bot once." = "尚未登录 Grok Bot。请用浏览器登录 Bot，或先打开一次 Grok Bot。";
 "Could not read Grok Bot login data." = "无法读取 Grok Bot 登录数据。";
-"No Grok Bot account found. Sign in inside Grok Bot, then refresh." = "未找到 Grok Bot 账号。请在 Grok Bot 中登录后刷新。";
-"Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once." = "无法从钥匙串解锁 Grok Bot 凭证。请在弹窗中允许访问，或先打开一次 Grok Bot。";
-"Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh." = "无法解密 Grok Bot 凭证。请先打开一次 Grok Bot，然后刷新。";
-"Grok Bot session token missing. Open Grok Bot once, then refresh." = "缺少 Grok Bot 会话。请先打开一次 Grok Bot，然后刷新。";
-"Grok Bot session expired. Open Grok Bot once, then refresh." = "Grok Bot 会话已过期。请先打开一次 Grok Bot，然后刷新。";
+"No Grok Bot account found. Sign in with browser, or sign in inside Grok Bot." = "未找到 Grok Bot 账号。请用浏览器登录，或在 Grok Bot 中登录。";
+"Could not unlock Bot credentials from Keychain. Allow access when prompted." = "无法从钥匙串解锁 Bot 凭证。请在弹窗中允许访问。";
+"Could not decrypt Grok Bot credentials. Sign in with browser, or open Grok Bot once." = "无法解密 Grok Bot 凭证。请用浏览器登录，或先打开一次 Grok Bot。";
+"Grok Bot session token missing. Sign in with browser, then refresh." = "缺少 Grok Bot 会话。请用浏览器登录后刷新。";
+"Grok Bot session expired. Sign in to Bot with browser again." = "Grok Bot 会话已过期。请重新用浏览器登录 Bot。";
+"Bot browser sign-in failed: %@" = "Bot 浏览器登录失败：%@";
+"Bot browser sign-in was denied." = "Bot 浏览器登录被拒绝。";
+"Bot browser sign-in timed out. Try again." = "Bot 浏览器登录超时，请重试。";
+"Bot browser sign-in cancelled." = "已取消 Bot 浏览器登录。";
+"Bot token refresh failed: %@" = "Bot 令牌续期失败：%@";
 
 // Notifications
 "Grok usage %d%%" = "Grok 用量 %d%%";

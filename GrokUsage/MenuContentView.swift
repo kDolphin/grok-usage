@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MenuContentView: View {
+    static let preferredWidth: CGFloat = 300
+
     @ObservedObject var model: UsageViewModel
 
     var body: some View {
@@ -12,11 +14,15 @@ struct MenuContentView: View {
             footer
         }
         .padding(12)
-        .frame(width: 300)
-        // Match system menu continuous corners (Dropbox / input-source style).
-        .menuBarPanelChrome()
-        // Menu bar panels: no blue keyboard/click focus rings (same as PowerTop).
+        .frame(width: Self.preferredWidth, alignment: .topLeading)
+        .fixedSize(horizontal: false, vertical: true)
+        // Menu bar popovers: no blue keyboard/click focus rings (same as PowerTop).
         .withoutFocusRing()
+        .onAppear {
+            DispatchQueue.main.async {
+                NSApp.keyWindow?.makeFirstResponder(nil)
+            }
+        }
     }
 
     private var header: some View {
@@ -60,6 +66,13 @@ struct MenuContentView: View {
                     .padding(.vertical, 3)
                     .background(thresholdColor(snap.usedPercent).opacity(0.18), in: Capsule())
                     .foregroundStyle(thresholdColor(snap.usedPercent))
+            case .signedOut:
+                Text(L10n.signedOutBadge)
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.secondary.opacity(0.15), in: Capsule())
+                    .foregroundStyle(.secondary)
             case .failed:
                 Text(L10n.errorBadge)
                     .font(.caption.weight(.semibold))
@@ -77,15 +90,20 @@ struct MenuContentView: View {
         case .loaded(let snap):
             loadedContent(snap)
 
+        case .signedOut:
+            signedOutContent
+
         case .failed(let message):
-            VStack(alignment: .leading, spacing: 6) {
-                Text(message)
-                    .font(.callout)
-                    .foregroundStyle(.red)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(L10n.authFileHint)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                if case .waiting(let userCode) = model.signInPhase {
+                    signInWaitingView(userCode: userCode)
+                } else {
+                    Text(message)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                    signInActions
+                }
             }
 
         case .idle, .loading:
@@ -105,6 +123,99 @@ struct MenuContentView: View {
                 .font(.caption2)
                 .foregroundStyle(.orange)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+
+        // Re-auth progress while still showing live usage (rare).
+        if case .waiting(let userCode) = model.signInPhase, case .loaded = model.state {
+            Divider().padding(.vertical, 2)
+            signInWaitingView(userCode: userCode)
+        }
+
+        // Bot meter / Bot browser login — independent of SuperGrok session.
+        botSection
+    }
+
+    @ViewBuilder
+    private var signedOutContent: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if case .waiting(let userCode) = model.signInPhase {
+                signInWaitingView(userCode: userCode)
+            } else {
+                Text(L10n.signedOutMessage)
+                    .font(.callout)
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(L10n.signInHint)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if case .failed(let message) = model.signInPhase {
+                    Text(message)
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else if let error = model.lastError {
+                    Text(error)
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                signInActions
+            }
+        }
+    }
+
+    private var signInActions: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                model.startSignIn()
+            } label: {
+                FooterActionRow(
+                    title: L10n.signInSuperGrokWithBrowser,
+                    systemImage: "person.crop.circle.badge.arrow.right"
+                )
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+            .disabled(model.isSigningIn)
+
+            Text(L10n.authFileHint)
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private func signInWaitingView(userCode: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(L10n.signInWaiting)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                Text(L10n.signInCode)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(userCode)
+                    .font(.body.monospaced())
+                    .textSelection(.enabled)
+            }
+            .font(.callout)
+            HStack(spacing: 8) {
+                ProgressView()
+                    .controlSize(.small)
+                Text(L10n.signInBrowserOpened)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            Button {
+                model.cancelSignIn()
+            } label: {
+                Text(L10n.cancelSignIn)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
         }
     }
 
@@ -173,14 +284,26 @@ struct MenuContentView: View {
                 }
             }
 
-            botSection
+            // Last row of the SuperGrok module (after product breakdown).
+            Button {
+                model.signOut()
+            } label: {
+                FooterActionRow(
+                    title: L10n.signOutSuperGrok,
+                    systemImage: "rectangle.portrait.and.arrow.right"
+                )
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+            .disabled(model.isSigningIn)
         }
     }
 
     @ViewBuilder
     private var botSection: some View {
+        Divider().padding(.vertical, 2)
+
         if let bot = model.botSnapshot {
-            Divider().padding(.vertical, 2)
             meterHeader(
                 title: L10n.botSection,
                 percent: bot.usedPercent,
@@ -212,16 +335,79 @@ struct MenuContentView: View {
                         .foregroundStyle(.orange)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                if !model.hasOwnBotCredential {
+                    Text(L10n.botUsingLocalLogin)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
-        } else if let error = model.botError, !model.isRefreshing {
-            Divider().padding(.vertical, 2)
+        } else {
             Text(L10n.botSection)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
-            Text(error)
-                .font(.caption2)
-                .foregroundStyle(.orange)
-                .fixedSize(horizontal: false, vertical: true)
+
+            if case .waiting = model.botSignInPhase {
+                EmptyView()
+            } else if let error = model.botError, !model.isRefreshing {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if !model.isRefreshing {
+                Text(L10n.botSignInHint)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+
+        // Auth controls always visible so local Grok Bot fallback cannot hide them.
+        botAuthActions
+    }
+
+    @ViewBuilder
+    private var botAuthActions: some View {
+        if case .waiting = model.botSignInPhase {
+            HStack(spacing: 8) {
+                ProgressView()
+                    .controlSize(.small)
+                Text(L10n.botSignInWaiting)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Button {
+                model.cancelBotSignIn()
+            } label: {
+                FooterActionRow(title: L10n.cancelSignIn, systemImage: "xmark.circle")
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+        } else if model.hasOwnBotCredential {
+            Button {
+                model.signOutBot()
+            } label: {
+                FooterActionRow(
+                    title: L10n.signOutBot,
+                    systemImage: "rectangle.portrait.and.arrow.right"
+                )
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+            .disabled(model.isBotSigningIn)
+        } else {
+            Button {
+                model.startBotSignIn()
+            } label: {
+                FooterActionRow(
+                    title: L10n.signInBotWithBrowser,
+                    systemImage: "person.crop.circle.badge.arrow.right"
+                )
+            }
+            .buttonStyle(.plain)
+            .withoutFocusRing()
+            .disabled(model.isBotSigningIn)
         }
     }
 
@@ -292,66 +478,28 @@ struct MenuContentView: View {
     }
 
     private var footer: some View {
-        VStack(spacing: 2) {
+        VStack(alignment: .leading, spacing: 6) {
             Button {
                 model.refresh()
             } label: {
-                HStack {
-                    if model.isRefreshing {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    Text(model.isRefreshing ? L10n.refreshing : L10n.refreshNow)
-                    Spacer(minLength: 0)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
+                FooterActionRow(
+                    title: model.isRefreshing ? L10n.refreshing : L10n.refreshNow,
+                    systemImage: "arrow.clockwise",
+                    isBusy: model.isRefreshing
+                )
             }
             .buttonStyle(.plain)
             .withoutFocusRing()
             .keyboardShortcut("r")
-            .disabled(model.isRefreshing)
+            .disabled(model.isRefreshing || !model.canRefresh)
 
-            Button {
-                model.openUsagePage()
-            } label: {
-                Label(L10n.openGrokUsage, systemImage: "safari")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .withoutFocusRing()
-
-            Button {
-                model.openBillingPage()
-            } label: {
-                Label(L10n.openBilling, systemImage: "creditcard")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .withoutFocusRing()
-
-            Button {
-                model.openBotUsagePage()
-            } label: {
-                Label(L10n.openBotUsage, systemImage: "cpu")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .withoutFocusRing()
-
-            Divider().padding(.vertical, 2)
+            Divider().padding(.vertical, 4)
 
             Toggle(isOn: Binding(
                 get: { model.launchAtLogin },
                 set: { model.setLaunchAtLogin($0) }
             )) {
-                Label(L10n.launchAtLogin, systemImage: "power.circle")
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                FooterActionRow(title: L10n.launchAtLogin, systemImage: "power.circle")
             }
             .toggleStyle(.switch)
             .controlSize(.small)
@@ -362,16 +510,15 @@ struct MenuContentView: View {
                     .font(.caption2)
                     .foregroundStyle(.orange)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.leading, FooterActionRow.iconColumnWidth + FooterActionRow.iconTextSpacing)
             }
 
-            Divider().padding(.vertical, 2)
+            Divider().padding(.vertical, 4)
 
             Button(role: .destructive) {
                 model.quit()
             } label: {
-                Label(L10n.quitApp, systemImage: "power")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
+                FooterActionRow(title: L10n.quitApp, systemImage: "power")
             }
             .buttonStyle(.plain)
             .withoutFocusRing()
@@ -381,7 +528,7 @@ struct MenuContentView: View {
                 .font(.caption2.monospacedDigit())
                 .foregroundStyle(.tertiary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.top, 4)
+                .padding(.top, 2)
         }
     }
 
@@ -428,6 +575,40 @@ private struct UsageProgressStyle: ProgressViewStyle {
         }
         .frame(height: 6)
         .accessibilityValue(Text("\(Int((fraction * 100).rounded()))%"))
+    }
+}
+
+// MARK: - Footer action row
+
+/// Fixed-width icon column so action titles share one left edge (SF Symbols vary in width).
+private struct FooterActionRow: View {
+    static let iconColumnWidth: CGFloat = 16
+    static let iconTextSpacing: CGFloat = 8
+
+    let title: String
+    var systemImage: String? = nil
+    var isBusy: Bool = false
+
+    var body: some View {
+        HStack(spacing: Self.iconTextSpacing) {
+            ZStack {
+                if isBusy {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if let systemImage {
+                    Image(systemName: systemImage)
+                        .font(.body)
+                }
+            }
+            .frame(width: Self.iconColumnWidth, height: Self.iconColumnWidth)
+            .foregroundStyle(.secondary)
+
+            Text(title)
+                .foregroundStyle(.primary)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
     }
 }
 

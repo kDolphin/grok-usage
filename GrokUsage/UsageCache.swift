@@ -59,6 +59,10 @@ enum UsageCache {
         try? data.write(to: fileURL, options: .atomic)
     }
 
+    static func clear() {
+        try? FileManager.default.removeItem(at: fileURL)
+    }
+
     static func load() -> (snapshot: UsageSnapshot, bot: BotUsageSnapshot?, email: String?)? {
         guard let data = try? Data(contentsOf: fileURL),
               let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any]

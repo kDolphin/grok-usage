@@ -8,6 +8,30 @@ enum L10n {
     static var appTitle: String { String(localized: "Grok Usage") }
     static var errorBadge: String { String(localized: "Error") }
     static var authFileHint: String { String(localized: "Auth file: ~/.grok/auth.json") }
+    static var signInWithBrowser: String { signInSuperGrokWithBrowser }
+    static var signInSuperGrokWithBrowser: String {
+        String(localized: "Sign in to SuperGrok with browser")
+    }
+    static var signInHint: String {
+        String(localized: "SuperGrok uses your xAI / Grok account. Bot login is separate below.")
+    }
+    static var signInWaiting: String {
+        String(localized: "Waiting for browser sign-in… Confirm this code if asked:")
+    }
+    static var signInCode: String { String(localized: "Code") }
+    static var signInBrowserOpened: String {
+        String(localized: "Browser opened. Return here when finished.")
+    }
+    static var cancelSignIn: String { String(localized: "Cancel sign-in") }
+    static var signOut: String { signOutSuperGrok }
+    static var signOutSuperGrok: String { String(localized: "Sign out of SuperGrok") }
+    static var signedOutBadge: String { String(localized: "Signed out") }
+    static var signedOutMessage: String {
+        String(localized: "SuperGrok signed out. Bot login below is independent.")
+    }
+    static var a11ySignedOut: String {
+        String(localized: "Grok Usage signed out")
+    }
     static var loadingUsage: String { String(localized: "Loading usage…") }
     static var usedPrefix: String { String(localized: "Used") }
 
@@ -153,6 +177,19 @@ enum L10n {
     static var authInvalidResponse: String { String(localized: "Invalid response") }
     static var authMissingAccessToken: String { String(localized: "Response missing access_token") }
 
+    static func deviceAuthFailed(_ detail: String) -> String {
+        String(format: String(localized: "Browser sign-in failed: %@"), detail)
+    }
+    static var deviceAuthDenied: String {
+        String(localized: "Browser sign-in was denied.")
+    }
+    static var deviceAuthExpired: String {
+        String(localized: "Browser sign-in timed out. Try again.")
+    }
+    static var deviceAuthCancelled: String {
+        String(localized: "Sign-in cancelled.")
+    }
+
     // MARK: - Fetch
 
     static var fetchUnauthorized: String {
@@ -165,26 +202,55 @@ enum L10n {
 
     // MARK: - Grok Bot auth / fetch
 
+    static var signInBotWithBrowser: String { String(localized: "Sign in to Bot with browser") }
+    static var signOutBot: String { String(localized: "Sign out of Bot") }
+    static var botSignInHint: String {
+        String(localized: "Sign in with browser for the Bot meter, or use a local Grok Bot login.")
+    }
+    static var botUsingLocalLogin: String {
+        String(localized: "Using local Grok Bot login. Browser sign-in is optional.")
+    }
+    static var botSignInWaiting: String {
+        String(localized: "Waiting for Bot browser sign-in…")
+    }
+    static var botSignedOutHint: String {
+        String(localized: "Bot signed out. Sign in with browser to show Bot usage again.")
+    }
     static var botAuthMissing: String {
-        String(localized: "Grok Bot not signed in. Open Grok Bot once, then refresh.")
+        String(localized: "Grok Bot not signed in. Use Sign in to Bot with browser, or open Grok Bot once.")
     }
     static var botAuthInvalid: String {
         String(localized: "Could not read Grok Bot login data.")
     }
     static var botAuthNoAccount: String {
-        String(localized: "No Grok Bot account found. Sign in inside Grok Bot, then refresh.")
+        String(localized: "No Grok Bot account found. Sign in with browser, or sign in inside Grok Bot.")
     }
     static var botAuthKeychain: String {
-        String(localized: "Could not unlock Grok Bot credentials from Keychain. Allow access when prompted, or open Grok Bot once.")
+        String(localized: "Could not unlock Bot credentials from Keychain. Allow access when prompted.")
     }
     static var botAuthDecryptFailed: String {
-        String(localized: "Could not decrypt Grok Bot credentials. Open Grok Bot once, then refresh.")
+        String(localized: "Could not decrypt Grok Bot credentials. Sign in with browser, or open Grok Bot once.")
     }
     static var botAuthNoToken: String {
-        String(localized: "Grok Bot session token missing. Open Grok Bot once, then refresh.")
+        String(localized: "Grok Bot session token missing. Sign in with browser, then refresh.")
     }
     static var botFetchUnauthorized: String {
-        String(localized: "Grok Bot session expired. Open Grok Bot once, then refresh.")
+        String(localized: "Grok Bot session expired. Sign in to Bot with browser again.")
+    }
+    static func botLoginFailed(_ detail: String) -> String {
+        String(format: String(localized: "Bot browser sign-in failed: %@"), detail)
+    }
+    static var botLoginDenied: String {
+        String(localized: "Bot browser sign-in was denied.")
+    }
+    static var botLoginExpired: String {
+        String(localized: "Bot browser sign-in timed out. Try again.")
+    }
+    static var botLoginCancelled: String {
+        String(localized: "Bot browser sign-in cancelled.")
+    }
+    static func botRefreshFailed(_ detail: String) -> String {
+        String(format: String(localized: "Bot token refresh failed: %@"), detail)
     }
 
     // MARK: - Notifications

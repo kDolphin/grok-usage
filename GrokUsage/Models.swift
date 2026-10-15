@@ -144,6 +144,8 @@ struct BotUsageSnapshot: Equatable {
 enum UsageLoadState: Equatable {
     case idle
     case loading
+    /// No SuperGrok session — show sign-in, never resurrect cached usage.
+    case signedOut
     case loaded(UsageSnapshot)
     case failed(String)
 }
